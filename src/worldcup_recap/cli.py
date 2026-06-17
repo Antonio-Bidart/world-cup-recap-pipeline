@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import argparse
 import sys
+import time
 import uuid
 from pathlib import Path
 
@@ -51,6 +52,7 @@ def run_pipeline(args: argparse.Namespace) -> int:
             for group in SETTINGS.groups:
                 wikitext = client.fetch_group_wikitext(group)
                 matches.extend(parse_group_matches(group, wikitext))
+                time.sleep(1.5)
 
             counts.update(upsert_matches(connection, matches))
             rows = fetch_matches(connection)
@@ -87,4 +89,3 @@ def show_latest(args: argparse.Namespace) -> int:
 
 if __name__ == "__main__":
     sys.exit(main())
-
