@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import argparse
 import sys
-import time
 import uuid
 from pathlib import Path
 
@@ -49,10 +48,9 @@ def run_pipeline(args: argparse.Namespace) -> int:
 
         try:
             matches = []
-            for group in SETTINGS.groups:
-                wikitext = client.fetch_group_wikitext(group)
+            wikitexts = client.fetch_all_group_wikitexts(SETTINGS.groups)
+            for group, wikitext in wikitexts.items():
                 matches.extend(parse_group_matches(group, wikitext))
-                time.sleep(1.5)
 
             counts.update(upsert_matches(connection, matches))
             rows = fetch_matches(connection)

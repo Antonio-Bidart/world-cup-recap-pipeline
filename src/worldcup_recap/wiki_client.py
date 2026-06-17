@@ -17,6 +17,43 @@ class WikiClient:
     def __init__(self, settings: Settings = SETTINGS) -> None:
         self.settings = settings
 
+    def fetch_all_group_wikitexts(self, groups: tuple[str, ...]) -> dict[str, str]:
+        titles_by_group = {
+            group: self.settings.group_title_template.format(group=group)
+            for group in groups
+        }
+        params = {
+            "action": "query",
+            "prop": "revisions",
+            "titles": "|".join(titles_by_group.values()),
+            "rvslots": "main",
+            "rvprop": "content",
+            "format": "json",
+            "formatversion": "2",
+        }
+        url = f"{self.settings.wikipedia_api_url}?{urlencode(params)}"
+        request = Request(
+            url,
+            headers={
+                "Accept": "application/json",
+                "User-Agent": "world-cup-recap-pipeline/0.1 (portfolio automation; contact: github.com/Antonio-Bidart)",
+            },
+        )
+        payload = self._fetch_json(request, "2026 FIFA World Cup groups")
+        pages = payload.get("query", {}).get("pages", [])
+        text_by_title = {
+            page.get("title", ""): page["revisions"][0]["slots"]["main"]["content"]
+            for page in pages
+            if not page.get("missing") and page.get("revisions")
+        }
+
+        result: dict[str, str] = {}
+        for group, title in titles_by_group.items():
+            if title not in text_by_title:
+                raise WikiClientError(f"Wikipedia page not found: {title}")
+            result[group] = text_by_title[title]
+        return result
+
     def fetch_group_wikitext(self, group: str) -> str:
         title = self.settings.group_title_template.format(group=group)
         params = {
@@ -38,8 +75,6 @@ class WikiClient:
         )
 
         payload = self._fetch_json(request, title)
-        except json.JSONDecodeError as exc:
-            raise WikiClientError(f"Wikipedia returned invalid JSON for {title}") from exc
 
         pages = payload.get("query", {}).get("pages", [])
         if not pages or pages[0].get("missing"):
