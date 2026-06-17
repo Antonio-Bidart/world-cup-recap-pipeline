@@ -16,7 +16,7 @@ Nota: los links funcionan despues de habilitar GitHub Pages con source `GitHub A
 - **Datos abiertos y gratis:** usa Wikipedia/MediaWiki API, sin API key y sin servicios pagos.
 - **Persistencia relacional:** guarda partidos, recaps y corridas en SQLite.
 - **Idempotencia:** cada partido tiene `match_id` estable y `payload_hash` para evitar duplicados.
-- **IA aplicada:** intenta usar GitHub Models en modo gratuito; si no esta disponible, usa un motor local de recaps para no fallar.
+- **Recaps automaticos:** usa un motor local gratuito y reproducible; GitHub Models puede activarse como mejora opcional si hay acceso gratuito disponible.
 - **Observabilidad:** registra corridas y contadores en SQLite y en `logs/runs.ndjson`.
 - **Salida ejecutiva:** publica HTML, CSV y JSON listos para consumir.
 
@@ -52,5 +52,4 @@ Archivos generados:
 
 ## Fuente y costo
 
-La fuente principal es la API publica de Wikipedia/MediaWiki. GitHub Models se usa solo como mejora opcional y gratuita con limites; el pipeline tiene fallback local para garantizar ejecucion sin credenciales pagas.
-
+La fuente principal es la API publica de Wikipedia/MediaWiki. El modo por defecto no requiere ninguna credencial paga. GitHub Models queda como mejora opcional con limites gratuitos, pero el pipeline no depende de eso para funcionar.
