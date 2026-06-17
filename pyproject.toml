@@ -1,0 +1,18 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "world-cup-recap-pipeline"
+version = "0.1.0"
+description = "Pipeline gratuito para generar recaps del Mundial con datos abiertos, SQLite, GitHub Actions y GitHub Pages."
+readme = "README.md"
+requires-python = ">=3.11"
+authors = [{ name = "Antonio Garcia Bidart" }]
+
+[project.scripts]
+worldcup-recap = "worldcup_recap.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
