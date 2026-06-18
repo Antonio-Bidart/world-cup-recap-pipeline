@@ -20,18 +20,6 @@ Nota: los links funcionan despues de habilitar GitHub Pages con source `GitHub A
 - **Observabilidad:** registra corridas y contadores en SQLite y en `logs/runs.ndjson`.
 - **Salida ejecutiva:** publica HTML, CSV y JSON listos para consumir.
 
-## Lectura para empresa
-
-Aunque el dominio sea deportivo, el patron es trasladable a seguimiento operativo:
-
-- partido = tarea, ticket o proyecto
-- seleccion = equipo o responsable
-- goles/resultados = entregables, bloqueos o metricas
-- proximo partido = proxima accion planificada
-- tendencia por grupo = productividad semanal o comparacion entre equipos
-- recap automatico = resumen ejecutivo para direccion
-
-Es decir: el mismo pipeline podria usarse para reportar productividad, avance de tareas o estado semanal de equipos.
 
 ## Uso local
 
