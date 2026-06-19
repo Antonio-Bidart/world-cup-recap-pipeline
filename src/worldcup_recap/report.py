@@ -72,7 +72,27 @@ def _write_index(rows: list[sqlite3.Row], path: Path) -> None:
     }}
     .team {{ display: flex; align-items: center; gap: 8px; font-size: 17px; font-weight: 700; }}
     .team:last-child {{ justify-content: flex-end; text-align: right; }}
-    .flag {{ font-size: 22px; line-height: 1; }}
+    .flag {{ display: inline-flex; align-items: center; flex: 0 0 auto; }}
+    .flag-img {{
+      width: 28px;
+      height: 20px;
+      object-fit: cover;
+      border-radius: 3px;
+      box-shadow: 0 0 0 1px rgba(16, 24, 40, .15);
+      background: #edf2f4;
+      display: block;
+    }}
+    .flag-fallback {{
+      width: 28px;
+      height: 20px;
+      display: inline-grid;
+      place-items: center;
+      border-radius: 3px;
+      background: #edf2f4;
+      color: #607078;
+      font-size: 10px;
+      font-weight: 800;
+    }}
     .score {{
       background: #102a2d;
       color: white;

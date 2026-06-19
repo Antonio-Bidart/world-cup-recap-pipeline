@@ -57,57 +57,57 @@ TEAM_CODES = {
     "UZB": "Uzbekistan",
 }
 
-TEAM_FLAGS = {
-    "Algeria": "🇩🇿",
-    "Argentina": "🇦🇷",
-    "Australia": "🇦🇺",
-    "Austria": "🇦🇹",
-    "Belgium": "🇧🇪",
-    "Bosnia and Herzegovina": "🇧🇦",
-    "Brazil": "🇧🇷",
-    "Cabo Verde": "🇨🇻",
-    "Cameroon": "🇨🇲",
-    "Canada": "🇨🇦",
-    "Colombia": "🇨🇴",
-    "Congo DR": "🇨🇩",
-    "Costa Rica": "🇨🇷",
-    "Cote d'Ivoire": "🇨🇮",
-    "Croatia": "🇭🇷",
-    "Curacao": "🇨🇼",
-    "Czechia": "🇨🇿",
-    "Ecuador": "🇪🇨",
-    "Egypt": "🇪🇬",
-    "England": "🏴",
-    "France": "🇫🇷",
-    "Germany": "🇩🇪",
-    "Ghana": "🇬🇭",
-    "Haiti": "🇭🇹",
-    "IR Iran": "🇮🇷",
-    "Iraq": "🇮🇶",
-    "Japan": "🇯🇵",
-    "Jordan": "🇯🇴",
-    "Korea Republic": "🇰🇷",
-    "Mexico": "🇲🇽",
-    "Morocco": "🇲🇦",
-    "Netherlands": "🇳🇱",
-    "New Zealand": "🇳🇿",
-    "Norway": "🇳🇴",
-    "Panama": "🇵🇦",
-    "Paraguay": "🇵🇾",
-    "Portugal": "🇵🇹",
-    "Qatar": "🇶🇦",
-    "Saudi Arabia": "🇸🇦",
-    "Scotland": "🏴",
-    "Senegal": "🇸🇳",
-    "South Africa": "🇿🇦",
-    "Spain": "🇪🇸",
-    "Sweden": "🇸🇪",
-    "Switzerland": "🇨🇭",
-    "Tunisia": "🇹🇳",
-    "Turkey": "🇹🇷",
-    "United States": "🇺🇸",
-    "Uruguay": "🇺🇾",
-    "Uzbekistan": "🇺🇿",
+TEAM_FLAG_CODES = {
+    "Algeria": "dz",
+    "Argentina": "ar",
+    "Australia": "au",
+    "Austria": "at",
+    "Belgium": "be",
+    "Bosnia and Herzegovina": "ba",
+    "Brazil": "br",
+    "Cabo Verde": "cv",
+    "Cameroon": "cm",
+    "Canada": "ca",
+    "Colombia": "co",
+    "Congo DR": "cd",
+    "Costa Rica": "cr",
+    "Cote d'Ivoire": "ci",
+    "Croatia": "hr",
+    "Curacao": "cw",
+    "Czechia": "cz",
+    "Ecuador": "ec",
+    "Egypt": "eg",
+    "England": "gb-eng",
+    "France": "fr",
+    "Germany": "de",
+    "Ghana": "gh",
+    "Haiti": "ht",
+    "IR Iran": "ir",
+    "Iraq": "iq",
+    "Japan": "jp",
+    "Jordan": "jo",
+    "Korea Republic": "kr",
+    "Mexico": "mx",
+    "Morocco": "ma",
+    "Netherlands": "nl",
+    "New Zealand": "nz",
+    "Norway": "no",
+    "Panama": "pa",
+    "Paraguay": "py",
+    "Portugal": "pt",
+    "Qatar": "qa",
+    "Saudi Arabia": "sa",
+    "Scotland": "gb-sct",
+    "Senegal": "sn",
+    "South Africa": "za",
+    "Spain": "es",
+    "Sweden": "se",
+    "Switzerland": "ch",
+    "Tunisia": "tn",
+    "Turkey": "tr",
+    "United States": "us",
+    "Uruguay": "uy",
+    "Uzbekistan": "uz",
 }
 
 
@@ -139,7 +139,16 @@ def slugify(value: str) -> str:
 
 
 def flag_for_team(team: str) -> str:
-    return TEAM_FLAGS.get(team, "🏳")
+    code = TEAM_FLAG_CODES.get(team)
+    if not code:
+        return '<span class="flag-fallback">--</span>'
+    escaped_team = html.escape(team, quote=True)
+    return (
+        f'<img class="flag-img" '
+        f'src="https://flagcdn.com/w40/{code}.png" '
+        f'srcset="https://flagcdn.com/w80/{code}.png 2x" '
+        f'width="28" height="20" loading="lazy" alt="{escaped_team} flag">'
+    )
 
 
 def _replace_flag_templates(value: str) -> str:
