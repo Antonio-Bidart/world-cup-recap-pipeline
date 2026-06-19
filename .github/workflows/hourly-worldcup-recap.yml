@@ -45,7 +45,6 @@ jobs:
             logs/runs.ndjson
             site/index.html
             site/matches.csv
-            site/team_status.json
 
       - name: Configure GitHub Pages
         uses: actions/configure-pages@v5

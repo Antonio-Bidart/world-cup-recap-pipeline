@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import json
 import sqlite3
-from collections import defaultdict
+from collections import Counter, defaultdict
 from datetime import date
 
 from .models import parse_score
@@ -89,7 +89,33 @@ def goals_for_row(row: sqlite3.Row) -> list[str]:
     return goals
 
 
+def goal_events_for_row(row: sqlite3.Row) -> list[dict[str, str]]:
+    payload = json.loads(row["goals_json"])
+    goals = []
+    for key in ("goals1", "goals2"):
+        goals.extend(payload.get(key, []))
+    return goals
+
+
+def top_scorers(rows: list[sqlite3.Row], limit: int = 10) -> list[dict[str, int | str]]:
+    counts: Counter[tuple[str, str]] = Counter()
+    for row in rows:
+        if parse_score(row["score"]) is None:
+            continue
+        for goal in goal_events_for_row(row):
+            if goal.get("note") == "own goal":
+                continue
+            player = str(goal.get("player", "")).strip()
+            team = str(goal.get("team", "")).strip()
+            if player:
+                counts[(player, team)] += 1
+
+    return [
+        {"player": player, "team": team, "goals": goals}
+        for (player, team), goals in counts.most_common(limit)
+    ]
+
+
 def _next_match_label(team: str, row: sqlite3.Row) -> str:
     opponent = row["team2"] if row["team1"] == team else row["team1"]
     return f"{row['match_date']} {row['match_time']} vs {opponent} ({row['group_name']})"
-

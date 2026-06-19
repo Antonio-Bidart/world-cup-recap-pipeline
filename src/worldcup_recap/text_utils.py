@@ -57,6 +57,59 @@ TEAM_CODES = {
     "UZB": "Uzbekistan",
 }
 
+TEAM_FLAGS = {
+    "Algeria": "🇩🇿",
+    "Argentina": "🇦🇷",
+    "Australia": "🇦🇺",
+    "Austria": "🇦🇹",
+    "Belgium": "🇧🇪",
+    "Bosnia and Herzegovina": "🇧🇦",
+    "Brazil": "🇧🇷",
+    "Cabo Verde": "🇨🇻",
+    "Cameroon": "🇨🇲",
+    "Canada": "🇨🇦",
+    "Colombia": "🇨🇴",
+    "Congo DR": "🇨🇩",
+    "Costa Rica": "🇨🇷",
+    "Cote d'Ivoire": "🇨🇮",
+    "Croatia": "🇭🇷",
+    "Curacao": "🇨🇼",
+    "Czechia": "🇨🇿",
+    "Ecuador": "🇪🇨",
+    "Egypt": "🇪🇬",
+    "England": "🏴",
+    "France": "🇫🇷",
+    "Germany": "🇩🇪",
+    "Ghana": "🇬🇭",
+    "Haiti": "🇭🇹",
+    "IR Iran": "🇮🇷",
+    "Iraq": "🇮🇶",
+    "Japan": "🇯🇵",
+    "Jordan": "🇯🇴",
+    "Korea Republic": "🇰🇷",
+    "Mexico": "🇲🇽",
+    "Morocco": "🇲🇦",
+    "Netherlands": "🇳🇱",
+    "New Zealand": "🇳🇿",
+    "Norway": "🇳🇴",
+    "Panama": "🇵🇦",
+    "Paraguay": "🇵🇾",
+    "Portugal": "🇵🇹",
+    "Qatar": "🇶🇦",
+    "Saudi Arabia": "🇸🇦",
+    "Scotland": "🏴",
+    "Senegal": "🇸🇳",
+    "South Africa": "🇿🇦",
+    "Spain": "🇪🇸",
+    "Sweden": "🇸🇪",
+    "Switzerland": "🇨🇭",
+    "Tunisia": "🇹🇳",
+    "Turkey": "🇹🇷",
+    "United States": "🇺🇸",
+    "Uruguay": "🇺🇾",
+    "Uzbekistan": "🇺🇿",
+}
+
 
 def clean_wikitext(value: str) -> str:
     value = html.unescape(value or "")
@@ -85,6 +138,10 @@ def slugify(value: str) -> str:
     return value.strip("-")
 
 
+def flag_for_team(team: str) -> str:
+    return TEAM_FLAGS.get(team, "🏳")
+
+
 def _replace_flag_templates(value: str) -> str:
     def repl(match: re.Match[str]) -> str:
         code = match.group(1)
@@ -95,4 +152,3 @@ def _replace_flag_templates(value: str) -> str:
 
 def _replace_score_link(value: str) -> str:
     return re.sub(r"\{\{score link\|[^|]+\|([^}]+)\}\}", r"\1", value)
-

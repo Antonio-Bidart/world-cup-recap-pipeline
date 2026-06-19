@@ -6,7 +6,6 @@ Pipeline gratuito para seguir el Mundial 2026: ingesta de datos abiertos, persis
 
 - [Ver reporte publicado](https://antonio-bidart.github.io/world-cup-recap-pipeline/)
 - [Descargar partidos CSV](https://antonio-bidart.github.io/world-cup-recap-pipeline/matches.csv)
-- [Descargar estado de selecciones JSON](https://antonio-bidart.github.io/world-cup-recap-pipeline/team_status.json)
 
 Nota: los links funcionan despues de habilitar GitHub Pages con source `GitHub Actions` y ejecutar el workflow.
 
@@ -35,7 +34,6 @@ Archivos generados:
 - `data/worldcup.sqlite`: base con partidos, recaps y corridas.
 - `site/index.html`: reporte visual.
 - `site/matches.csv`: partidos y recaps.
-- `site/team_status.json`: proximo partido o estado de cada seleccion.
 - `logs/runs.ndjson`: logs estructurados.
 
 ## Fuente y costo

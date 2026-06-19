@@ -5,7 +5,7 @@ import os
 from urllib.error import HTTPError, URLError
 from urllib.request import Request, urlopen
 
-from .analytics import goals_for_row
+from .analytics import goal_events_for_row, goals_for_row
 from .config import SETTINGS
 from .models import parse_score
 
@@ -55,22 +55,47 @@ def _github_models_summary(row, token: str) -> str:
 
 def _local_summary(row) -> str:
     score = parse_score(row["score"])
-    goals = goals_for_row(row)
-    goals_text = " Goleadores: " + "; ".join(goals) + "." if goals else ""
     if score is None:
         return f"{row['team1']} y {row['team2']} tienen partido programado por el grupo {row['group_name']}."
 
     s1, s2 = score
+    venue = f" en {row['stadium']}" if row["stadium"] else ""
+    scorer_text = _scorer_phrase(goal_events_for_row(row))
     if s1 == s2:
-        result = f"{row['team1']} y {row['team2']} empataron {row['score']}"
-        reading = "El reparto de puntos mantiene abierta la lectura del grupo."
+        opener = f"{row['team1']} y {row['team2']} igualaron {row['score']}{venue}"
+        reading = "El empate reparte puntos y deja el grupo abierto para la siguiente fecha."
     else:
         winner = row["team1"] if s1 > s2 else row["team2"]
         loser = row["team2"] if s1 > s2 else row["team1"]
         margin = abs(s1 - s2)
-        tone = "con autoridad" if margin >= 3 else "por margen corto" if margin == 1 else "con diferencia clara"
-        result = f"{winner} vencio a {loser} {row['score']} {tone}"
-        reading = "El resultado modifica la tendencia competitiva del grupo."
+        opener = f"{winner} supero a {loser} {row['score']}{venue}"
+        if margin >= 3:
+            reading = f"{winner} construyo una ventaja amplia y mejoro fuerte su diferencia de gol."
+        elif margin == 2:
+            reading = f"{winner} resolvio el partido con una diferencia clara y suma margen en la tabla."
+        else:
+            reading = f"{winner} se quedo con un triunfo corto, valioso para ordenar el grupo."
 
-    return f"{result} en el grupo {row['group_name']}. {reading}{goals_text}"
+    scorers = f" En el registro de goles aparece {scorer_text}." if scorer_text else ""
+    return f"{opener}. {reading}{scorers}"
 
+
+def _scorer_phrase(goals: list[dict[str, str]]) -> str:
+    if not goals:
+        return ""
+    counts: dict[tuple[str, str], int] = {}
+    own_goals = 0
+    for goal in goals:
+        if goal.get("note") == "own goal":
+            own_goals += 1
+            continue
+        key = (str(goal.get("player", "")), str(goal.get("team", "")))
+        counts[key] = counts.get(key, 0) + 1
+
+    parts = []
+    for (player, team), count in sorted(counts.items(), key=lambda item: (-item[1], item[0][0])):
+        suffix = f" x{count}" if count > 1 else ""
+        parts.append(f"{player} ({team}){suffix}")
+    if own_goals:
+        parts.append(f"{own_goals} gol en contra")
+    return ", ".join(parts[:4])
