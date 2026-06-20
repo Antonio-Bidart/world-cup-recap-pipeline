@@ -50,21 +50,23 @@ def parse_goals(team: str, raw: str) -> list[Goal]:
         if not text:
             continue
 
-        minute_matches = list(re.finditer(r"(\d+(?:\+\d+)?)'", text))
-        minute = minute_matches[0].group(1) if minute_matches else ""
-        before_minute = text[: minute_matches[0].start()].strip() if minute_matches else text
         note = ""
-        if " o.g." in text:
-            note = "own goal"
-        elif " pen." in text:
-            note = "penalty"
+        note_match = re.search(r"\b(o\.?g\.?|pen\.?)\s*$", text, flags=re.IGNORECASE)
+        if note_match:
+            token = note_match.group(1).lower().rstrip(".")
+            note = "own goal" if token == "og" else "penalty"
+            text = text[: note_match.start()].strip()
 
-        player = before_minute.replace(" o.g.", "").replace(" pen.", "").strip(" ,")
-        if minute_matches:
-            for match in minute_matches:
-                goals.append(Goal(team=team, player=player, minute=match.group(1), note=note))
-        else:
-            goals.append(Goal(team=team, player=player, minute=minute, note=note))
+        minute_matches = list(re.finditer(r"(\d+(?:\+\d+)?)'?", text))
+        if not minute_matches:
+            player = text.strip(" ,")
+            if player:
+                goals.append(Goal(team=team, player=player, minute="", note=note))
+            continue
+
+        player = text[: minute_matches[0].start()].strip(" ,")
+        for match in minute_matches:
+            goals.append(Goal(team=team, player=player, minute=match.group(1), note=note))
     return goals
 
 
