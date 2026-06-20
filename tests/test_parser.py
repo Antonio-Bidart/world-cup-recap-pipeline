@@ -34,5 +34,44 @@ class ParserTest(unittest.TestCase):
         self.assertEqual([goal.minute for goal in matches[0].goals1], ["17", "60", "76"])
 
 
+REAL_WORLD_SAMPLE = """
+<section begin=B3 />{{#invoke:football box|main
+|date={{Start date|2026|6|18}}
+|time=7:00&nbsp;p.m. UTC-7
+|team1={{#invoke:flag|fb-rt|CAN}}
+|score={{score link|2026 FIFA World Cup Group B#Canada vs Qatar|6-0}}
+|team2={{#invoke:flag|fb|QAT}}
+|goals1=
+*Larin 16
+*J. David 29, 45+3, 90+2
+*Saliba 64
+|goals2=
+|stadium=[[BC Place]], [[Vancouver]]
+|attendance=54,500
+|referee=Test Ref
+}}<section end=B3 />
+"""
+
+
+class RealWorldFormatTest(unittest.TestCase):
+    """Wikipedia no siempre pone el apostrofe del minuto (ej.: '29, 45+3, 90+2' en
+    vez de '29', 45+3', 90+2''), distinto entre paginas de grupo segun quien edito.
+    Si el parser no tolera eso, todos los goles de esa linea quedan pegados adentro
+    del nombre del jugador (ver conversacion sobre Jonathan David sin aparecer en
+    el ranking de goleadores pese a tener un hat-trick)."""
+
+    def test_multi_goal_line_without_apostrophe(self):
+        matches = parse_group_matches("B", REAL_WORLD_SAMPLE)
+        self.assertEqual(len(matches), 1)
+        david_goals = [g for g in matches[0].goals1 if g.player == "J. David"]
+        self.assertEqual(len(david_goals), 3, "Jonathan David deberia tener 3 goles separados, no 1 pegado")
+        self.assertEqual([g.minute for g in david_goals], ["29", "45+3", "90+2"])
+
+    def test_single_goal_line_without_apostrophe(self):
+        matches = parse_group_matches("B", REAL_WORLD_SAMPLE)
+        larin_goals = [g for g in matches[0].goals1 if g.player == "Larin"]
+        self.assertEqual(len(larin_goals), 1)
+        self.assertEqual(larin_goals[0].minute, "16")
+
 if __name__ == "__main__":
     unittest.main()
